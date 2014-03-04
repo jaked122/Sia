@@ -165,3 +165,13 @@ func (r SwarmStorage) GetRandomByte(index uint64) byte {
 	r.ReadFile(v, c, b)
 	return b[0]
 }
+//Delete Swarm and all inside it.
+func (r SwarmStorage) BurnTheEarth() error{
+    err:=os.Remove(r.SwarmId+".conf")
+    if err!=nil&&os.IsNotExist(err){
+    }else{
+	    os.Remove(r.SwarmId+".conf")
+    }   
+	os.RemoveAll(r.SwarmId)
+    return err;
+}
