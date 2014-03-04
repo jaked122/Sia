@@ -10,7 +10,7 @@ func Test_SwarmStoring(t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}
-    //Remove files afterwards
+  //Remove files afterwards
     defer i.BurnTheEarth()
 	i.CreateFile("0", 1000)
 	i.CreateFile("1", 10)
@@ -30,21 +30,21 @@ func Test_Parallel(t *testing.T) {
 }
 func Test_Swarm(t *testing.T) {
 	i, err := CreateSwarmSystem("SW1")
-	defer os.Remove("SW1")
 	if err != nil {
 		t.Error(err.Error())
 	}
 	if i == nil {
 		t.Fatal("first returned object is nil")
 	}
+    defer i.BurnTheEarth()
 
 	b, err := CreateSwarmSystem("SW2")
-	defer os.Remove("SW2")
 	if err != nil {
 		if b == nil {
 			t.Error("Failed to create second swarm")
 		}
 	}
+    defer b.BurnTheEarth()
 	_, err = i.CreateFile("hi_there", 1000)
 	if err != nil {
 		t.Error(err.Error())
