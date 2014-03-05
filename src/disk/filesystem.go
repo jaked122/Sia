@@ -55,7 +55,7 @@ func CreateSwarmSystem(swarmid string) (r *SwarmStorage, err error) {
 	return
 }
 
-func (r SwarmStorage) CreateFile(filehash string, length uint64) (written int64, err error) {
+func (r *SwarmStorage) CreateFile(filehash string, length uint64) (written int64, err error) {
 	file, err := os.Create(r.SwarmId + string(os.PathSeparator) + filehash)
 	r.MapLock.Lock()
 	if err != nil && os.IsExist(err) {
@@ -80,12 +80,12 @@ func (r SwarmStorage) CreateFile(filehash string, length uint64) (written int64,
 	written = int64(length)
 	return
 }
-func (r SwarmStorage) FileExists(filehash string) bool {
+func (r *SwarmStorage) FileExists(filehash string) bool {
 	_, ok := r.files[filehash]
 	return ok
 }
 
-func (r SwarmStorage) DeleteFile(filehash string) error {
+func (r *SwarmStorage) DeleteFile(filehash string) error {
 	l := r.FileLocks[filehash]
 	if l == nil {
 		r.FileLocks[filehash] = new(sync.Mutex)
@@ -102,7 +102,7 @@ func (r SwarmStorage) DeleteFile(filehash string) error {
 	return err
 }
 
-func (r SwarmStorage) WriteFile(filehash string, start uint64, data []byte) error {
+func (r *SwarmStorage) WriteFile(filehash string, start uint64, data []byte) error {
 	r.FileLocks[filehash].Lock()
 	defer r.FileLocks[filehash].Unlock()
 	path := r.SwarmId + string(os.PathSeparator) + filehash
@@ -122,16 +122,16 @@ func (r SwarmStorage) WriteFile(filehash string, start uint64, data []byte) erro
 	return nil
 
 }
-func (r SwarmStorage) ReadFile(filehash string, start uint64, data []byte) (err error) {
+func (r *SwarmStorage) ReadFile(filehash string, start uint64, data []byte) (err error) {
 	r.FileLocks[filehash].Lock()
 	defer r.FileLocks[filehash].Unlock()
 	file, err := os.Open(r.getFileName(filehash))
 	file.ReadAt(data, int64(start))
 	return
 }
-func (r SwarmStorage) SaveSwarm() {
+func (r *SwarmStorage) SaveSwarm() {
 	s, err := os.Create(r.SwarmId + ".conf")
-	if err != nil && os.IsExist(err) {
+    if err != nil && os.IsExist(err) {
 		s, err = os.Open(r.SwarmId + ".conf")
 	}
 	defer s.Close()
@@ -144,7 +144,7 @@ func (r SwarmStorage) SaveSwarm() {
 	r.MapLock.RUnlock()
 
 }
-func (r SwarmStorage) GetRandomByte(index uint64) byte {
+func (r *SwarmStorage) GetRandomByte(index uint64) byte {
 
 	var u uint64
 	c := uint64(0)
@@ -166,7 +166,7 @@ func (r SwarmStorage) GetRandomByte(index uint64) byte {
 	return b[0]
 }
 //Delete Swarm and all inside it.
-func (r SwarmStorage) BurnTheEarth() error{
+func (r *SwarmStorage) BurnTheEarth() error{
     err:=os.Remove(r.SwarmId+".conf")
     if err!=nil&&os.IsNotExist(err){
     }else{
