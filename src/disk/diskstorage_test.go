@@ -2,11 +2,13 @@ package disk
 
 import (
 	"os"
+	"sync"
 	"testing"
 )
 
 func Test_SwarmStoring(t *testing.T) {
 	i, err := CreateSwarmSystem("f")
+	defer i.Delete()
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -24,9 +26,16 @@ func Test_SwarmStoring(t *testing.T) {
 func Test_Parallel(t *testing.T) {
 	i, _ := CreateSwarmSystem("files")
 	defer i.BurnTheEarth()
+	wg := &sync.WaitGroup{}
 	for c := 0; c < 100; c++ {
-		go i.CreateFile(string(c), uint64(c))
+		wg.Add(1)
+		go func(c int) {
+			i.CreateFile(string(c), uint64(c))
+			wg.Done()
+		}(c)
 	}
+
+	wg.Wait()
 }
 func Test_Swarm(t *testing.T) {
 	i, err := CreateSwarmSystem("SW1")
@@ -39,6 +48,7 @@ func Test_Swarm(t *testing.T) {
 	defer i.BurnTheEarth()
 
 	b, err := CreateSwarmSystem("SW2")
+	defer b.Delete()
 	if err != nil {
 		if b == nil {
 			t.Error("Failed to create second swarm")

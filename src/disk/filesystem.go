@@ -55,7 +55,8 @@ func CreateSwarmSystem(swarmid string) (r *SwarmStorage, err error) {
 	return
 }
 
-func (r *SwarmStorage) CreateFile(filehash string, length uint64) (written int64, err error) {
+
+func (r SwarmStorage) CreateFile(filehash string, length uint64) (written int64, err error) {
 	file, err := os.Create(r.SwarmId + string(os.PathSeparator) + filehash)
 	r.MapLock.Lock()
 	if err != nil && os.IsExist(err) {
