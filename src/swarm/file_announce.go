@@ -1,9 +1,10 @@
 package swarm
+
 import (
-	"common"
 	"encoding/json"
 )
-const(
+
+const (
 	//Request a file from the network
 	RequestFile = iota
 	//Serve a file for the network to obtain
@@ -11,38 +12,49 @@ const(
 	//Request a particular chunk to be stored
 	RequestChunk
 )
-type FileAnnounce struct{
-	swarmid string
-	host string
-	updateid string
-	//The name of the file
-	Filename string
-	//The filesize of the file
-	Filesize uint64
-	//The number of chunks which make up the file
-	num_chunks uint16
-	//The type of announcement which is being made, E. G. RequestFile
-	AnnounceType int
-	//Empty if requesting a file, otherwise it is pregnant with
-	//the chunk to be retrieved or the content of said chunk.
-	content []byte
+
+//Stores the necessary information to make the file transmittable
+type FileAnnounce struct {
+	Origin      string
+	Filename    string
+	FileSize    uint64
+	TotalChunks uint16
+	Chunk       uint16
+	swarmid     string
+	updateid    string
+	Content     []byte
+
 }
 
-func (f *FileAnnounce) SwarmId() string{
+//Create a new fileannounce which presumably will be sent across
+// the wire to other hosts.
+func NewFileAnnounce(filename, origin, swarmid, updateid string,
+	TotalChunks, Chunk uint16, content []byte, blockchain *Blockchain) *FileAnnounce {
+	i := new(FileAnnounce)
+	i.Origin = origin
+	i.Filename = filename
+	i.FileSize = (uint64)(len(content)) * (uint64)(TotalChunks)
+	i.TotalChunks = TotalChunks
+	i.Content = content
+	i.swarmid = swarmid
+	i.updateid = updateid
+	return i
+}
+func (f *FileAnnounce) SwarmId() string {
 	return f.swarmid
 }
 
-func (f *FileAnnounce) UpdateId() string{
+func (f *FileAnnounce) UpdateId() string {
 	return f.updateid
 }
-func (f *FileAnnounce) Type() string{
+
+func (f *FileAnnounce) Type() string {
 	return "FileAnnounce"
 }
-func (f *FileAnnounce) MarshalString() string{
-	w,err:=json.Marshal(f)
-	if err!=nil{
-		panic("Unable to marshal
-	FileAnnounceTransaction. (This shouldn't happen)"+err.Error())
+func (f *FileAnnounce) MarshalString() string {
+	w, err := json.Marshal(f)
+	if err != nil {
+		panic("Unable to marshal FileAnnounceTransaction. (This shouldn't happen)" + err.Error())
 	}
 	return string(w)
 }

@@ -131,7 +131,7 @@ func (r *SwarmStorage) ReadFile(filehash string, start uint64, data []byte) (err
 }
 func (r *SwarmStorage) SaveSwarm() {
 	s, err := os.Create(r.SwarmId + ".conf")
-    if err != nil && os.IsExist(err) {
+	if err != nil && os.IsExist(err) {
 		s, err = os.Open(r.SwarmId + ".conf")
 	}
 	defer s.Close()
@@ -165,13 +165,14 @@ func (r *SwarmStorage) GetRandomByte(index uint64) byte {
 	r.ReadFile(v, c, b)
 	return b[0]
 }
+
 //Delete Swarm and all inside it.
-func (r *SwarmStorage) BurnTheEarth() error{
-    err:=os.Remove(r.SwarmId+".conf")
-    if err!=nil&&os.IsNotExist(err){
-    }else{
-	    os.Remove(r.SwarmId+".conf")
-    }   
+func (r *SwarmStorage) BurnTheEarth() error {
+	err := os.Remove(r.SwarmId + ".conf")
+	if err != nil && os.IsNotExist(err) {
+	} else {
+		os.Remove(r.SwarmId + ".conf")
+	}
 	os.RemoveAll(r.SwarmId)
-    return err;
+	return err
 }
