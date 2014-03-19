@@ -11,33 +11,28 @@ const (
 	ServeFile
 	//Request a particular chunk to be stored
 	RequestChunk
+	//Delete the file
+	DeleteFile
 )
 
 //Stores the necessary information to make the file transmittable
 type FileAnnounce struct {
-	Origin      string
-	Filename    string
-	FileSize    uint64
-	TotalChunks uint16
-	Chunk       uint16
-	swarmid     string
-	updateid    string
-	Content     []byte
-
+	Origin     string
+	Filename   string
+	FileSize   uint64
+	Chunk      uint16
+	swarmid    string
+	updateid   string
+	Content    []byte
+	recordtype int
 }
 
-//Create a new fileannounce which presumably will be sent across
-// the wire to other hosts.
-func NewFileAnnounce(filename, origin, swarmid, updateid string,
-	TotalChunks, Chunk uint16, content []byte, blockchain *Blockchain) *FileAnnounce {
+func NewFileAnnounce(Requesttype int, chunk uint16, origin, filename, swarmid string) *FileAnnounce {
 	i := new(FileAnnounce)
 	i.Origin = origin
-	i.Filename = filename
-	i.FileSize = (uint64)(len(content)) * (uint64)(TotalChunks)
-	i.TotalChunks = TotalChunks
-	i.Content = content
+	i.Chunk = chunk
+	i.recordtype = Requesttype
 	i.swarmid = swarmid
-	i.updateid = updateid
 	return i
 }
 func (f *FileAnnounce) SwarmId() string {

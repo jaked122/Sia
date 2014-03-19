@@ -8,7 +8,7 @@ import (
 
 func Test_SwarmStoring(t *testing.T) {
 	i, err := CreateSwarmSystem("f")
-	defer i.Delete()
+	defer i.BurnTheEarth()
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -48,7 +48,7 @@ func Test_Swarm(t *testing.T) {
 	defer i.BurnTheEarth()
 
 	b, err := CreateSwarmSystem("SW2")
-	defer b.Delete()
+	defer b.BurnTheEarth()
 	if err != nil {
 		if b == nil {
 			t.Error("Failed to create second swarm")
