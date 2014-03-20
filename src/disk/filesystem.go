@@ -169,9 +169,9 @@ func (r *SwarmStorage) GetRandomByte(index uint64) byte {
 //Delete Swarm and all inside it.
 func (r *SwarmStorage) BurnTheEarth() error {
 	err := os.Remove(r.SwarmId + ".conf")
+	//ignore the fact that the file does not exist. 
+	//This is acceptable for the configuration file
 	if err != nil && os.IsNotExist(err) {
-	} else {
-		os.Remove(r.SwarmId + ".conf")
 	}
 	os.RemoveAll(r.SwarmId)
 	return err
