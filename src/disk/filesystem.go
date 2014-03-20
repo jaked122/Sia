@@ -171,6 +171,7 @@ func (r *SwarmStorage) BurnTheEarth() error {
 	err := os.Remove(r.SwarmId + ".conf")
 	//ignore the fact that the file does not exist. 
 	//This is acceptable for the configuration file does not necessarily exist
+
 	if err != nil && os.IsNotExist(err) {
 	}
 	os.RemoveAll(r.SwarmId)
