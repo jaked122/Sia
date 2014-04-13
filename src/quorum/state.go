@@ -40,8 +40,8 @@ type State struct {
 // more fields might be added.
 type Participant struct {
 	PublicKey crypto.PublicKey
-	Address string
-	Port int16
+	Address   string
+	Port      int
 }
 
 // Create and initialize a state object
