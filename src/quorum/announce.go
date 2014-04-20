@@ -72,12 +72,8 @@ func (a *Announce) Type() string {
 	return "Announce"
 }
 
-func (a *Announce) SendOutAnnounce(recipients []*Participant) error {
+func (a *Announce) SendOutAnnounce(recipients []*Participant, server *network.TCPServer) error {
 	//TODO Add code to actually send out to participants when it works.
-	server, err := network.NewTCPServer(7777)
-	if err != nil {
-		log.Fatal("TCP Server not initialized")
-	}
 	for _, i := range recipients {
 		s, err := json.Marshal(a)
 		s = []byte(string(rune(0)) + string(s))
