@@ -45,8 +45,8 @@ type State struct {
 type Participant struct {
 	Address   common.Address
 	PublicKey crypto.PublicKey
-	Address   string
-	Port      int
+
+	Port int
 }
 
 // Create and initialize a state object

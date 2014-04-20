@@ -1,12 +1,20 @@
 package quorum
 
-import "common/log"
-import "network"
-import "encoding/json"
-import "common/erasure"
-import "os"
-import "io"
-import "fmt"
+import (
+	"common/erasure"
+	"common/log"
+	"encoding/json"
+	"fmt"
+	"io"
+	"network"
+	"os"
+)
+
+type File struct{
+	ID string
+	Size int
+	Chunkdistribution map(int,[]*Participant)
+}
 
 type Announce struct {
 	ID     string
@@ -59,6 +67,7 @@ func (a *Announce) SendOutAnnounce(recipients []*Participant) error {
 	//TODO Add code to actually send out to participants when it works.
 	for _, i := range recipients {
 		s, err := json.Marshal(a)
+		s = []byte(1) + s
 		if err != nil {
 			log.Fatal(err)
 		}
