@@ -1,6 +1,7 @@
 package quorum
 
 import (
+	"common"
 	"common/erasure"
 	"common/log"
 	"encoding/json"
@@ -10,16 +11,17 @@ import (
 	"os"
 )
 
-type File struct{
-	ID string
-	Size int
-	Chunkdistribution map(int,[]*Participant)
+type File struct {
+	ID                string
+	Size              int
+	Chunkdistribution map[int]*[]Participant
 }
 
 type Announce struct {
-	ID     string
-	Size   int
-	Chunks int
+	ID          string
+	Size        int
+	Chunks      int
+	networkinfo File
 }
 
 func CreateFileAnnounce(file string) *Announce {
@@ -44,6 +46,7 @@ func CreateFileAnnounce(file string) *Announce {
 		if err != nil {
 		}
 		redunt, _ := erasure.EncodeRing(A.Chunks, A.Size/A.Chunks, d)
+		A.Chunks = len(redunt)
 		indexs = indexs + 1
 		for index, val := range redunt {
 			k, e := os.Open(fmt.Sprintf("%s-%d%d", A.ID, indexs, index))
@@ -58,6 +61,12 @@ func CreateFileAnnounce(file string) *Announce {
 
 	return A
 }
+func (a *Announce) Identifier() byte {
+	return 2
+}
+func (a *Announce) HandleMessage(c []byte) {
+	//do stuff
+}
 
 func (a *Announce) Type() string {
 	return "Announce"
@@ -65,18 +74,22 @@ func (a *Announce) Type() string {
 
 func (a *Announce) SendOutAnnounce(recipients []*Participant) error {
 	//TODO Add code to actually send out to participants when it works.
+	server, err := network.NewTCPServer(7777)
+	if err != nil {
+		log.Fatal("TCP Server not initialized")
+	}
 	for _, i := range recipients {
 		s, err := json.Marshal(a)
-		s = []byte(1) + s
+		s = []byte(string(rune(0)) + string(s))
 		if err != nil {
 			log.Fatal(err)
 		}
-		resp, err := network.SendMessage(i.Address, i.Port, []byte(s))
+		c := new(common.Message)
+		c.Payload = s
+		c.Destination = i.Address
+		err = server.SendMessage(c)
 		if err != nil {
 			log.Fatal(err)
-		}
-		if resp[0] > 0 {
-			//handle file transmission, passing chunk resp[1]
 		}
 	}
 
